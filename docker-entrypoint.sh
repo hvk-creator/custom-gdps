@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-# Remove all MPM module symlinks to prevent duplicate loading
-rm -f /etc/apache2/mods-enabled/mpm_*.load
-rm -f /etc/apache2/mods-enabled/mpm_*.conf
-
-# Force-link only mpm_prefork
+# Fix MPM module symlinks
+rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
 ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
 ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
-# Execute the container command (apache2-foreground)
+# Bind explicitly to 0.0.0.0 on port 80
+echo "Listen 0.0.0.0:80" > /etc/apache2/ports.conf
+echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 exec "$@"
