@@ -1,7 +1,7 @@
 <?php
-$servername = "127.0.0.1";
-$port = 3306;
+$servername = "mariadb-navy-slope-ps.cloud.layerbase.dev";
+$port = 12725;
 $username = "root";
-$password = "";
-$dbname = "geometrydash";
+$password = "8g4MIBMcXmStMUjsZynoosUo";
+$dbname = "mariadb";
 ?>
