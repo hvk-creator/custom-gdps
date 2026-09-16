@@ -1,21 +1,33 @@
 #!/bin/bash
 set -e
 
-# Fix MPM conflicts by keeping only mpm_prefork
+# Purge conflicting MPM modules
 rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
 ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
 ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
-# Fallback to 8080 if PORT is somehow empty
 TARGET_PORT=${PORT:-8080}
 
-# Update ports.conf to listen on 0.0.0.0:TARGET_PORT
+# Bind Apache to dynamic PORT
 echo "Listen 0.0.0.0:${TARGET_PORT}" > /etc/apache2/ports.conf
 
-# Update VirtualHost in 000-default.conf to match TARGET_PORT
-sed -i "s/<VirtualHost \*:.*>/<VirtualHost \*:${TARGET_PORT}>/g" /etc/apache2/sites-available/000-default.conf
+# Configure VirtualHost for DocumentRoot /var/www/html
+cat <<EOF > /etc/apache2/sites-available/000-default.conf
+<VirtualHost *:${TARGET_PORT}>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
 
-# Suppress ServerName warnings in logs
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOF
+
 if ! grep -q "ServerName localhost" /etc/apache2/apache2.conf; then
     echo "ServerName localhost" >> /etc/apache2/apache2.conf
 fi
