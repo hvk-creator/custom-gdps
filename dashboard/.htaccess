@@ -1,8 +1,9 @@
-ErrorDocument 400 /database/dashboard/errors/400/
-ErrorDocument 403 /database/dashboard/errors/403/
-ErrorDocument 404 /database/dashboard/errors/404/
-ErrorDocument 500 /database/dashboard/errors/500/
-ErrorDocument 502 /database/dashboard/errors/502/
+# Correct relative paths to error pages (or comment them out if they don't exist)
+ErrorDocument 400 /dashboard/errors/400/
+ErrorDocument 403 /dashboard/errors/403/
+ErrorDocument 404 /dashboard/errors/404/
+ErrorDocument 500 /dashboard/errors/500/
+ErrorDocument 502 /dashboard/errors/502/
 
 <IfModule mod_expires.c>
   ExpiresActive On
