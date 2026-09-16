@@ -2,11 +2,11 @@
     RewriteEngine On
     RewriteBase /
 
-    # Allow direct access to existing files (like test.html) and directories (like /dashboard)
+    # Allow direct access to real files (e.g., /test.html, /db-test.php)
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # Route GDPS API endpoints safely to index.php
-    RewriteRule ^(.*)$ index.php [QSA,L]
+    # Route all root requests to dashboard/index.php
+    RewriteRule ^(.*)$ dashboard/index.php [QSA,L]
 </IfModule>
