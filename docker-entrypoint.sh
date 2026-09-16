@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-# Disable all MPM modules at startup to purge duplicate loads
-a2dismod mpm_event 2>/dev/null || true
-a2dismod mpm_worker 2>/dev/null || true
-a2dismod mpm_prefork 2>/dev/null || true
+# Remove all MPM module symlinks to prevent duplicate loading
+rm -f /etc/apache2/mods-enabled/mpm_*.load
+rm -f /etc/apache2/mods-enabled/mpm_*.conf
 
-# Force enable ONLY prefork (required by mod_php)
-a2enmod mpm_prefork
+# Force-link only mpm_prefork
+ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
-# Hand execution back to apache
+# Execute the container command (apache2-foreground)
 exec "$@"
