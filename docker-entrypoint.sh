@@ -1,17 +1,23 @@
 #!/bin/bash
 set -e
 
-# Purge conflicting MPM modules
+# Fix MPM module conflicts
 rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
 ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
 ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
 TARGET_PORT=${PORT:-8080}
 
-# Bind Apache to dynamic PORT
+# Update Listen port
 echo "Listen 0.0.0.0:${TARGET_PORT}" > /etc/apache2/ports.conf
 
-# Configure VirtualHost for DocumentRoot /var/www/html
+# Guarantee test.html exists in DocumentRoot
+mkdir -p /var/www/html
+echo "OK" > /var/www/html/test.html
+chmod 644 /var/www/html/test.html
+chown www-data:www-data /var/www/html/test.html
+
+# Configure Apache VirtualHost
 cat <<EOF > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:${TARGET_PORT}>
     ServerAdmin webmaster@localhost
